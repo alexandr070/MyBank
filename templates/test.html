@@ -5,12 +5,24 @@
     <title>Title</title>
 </head>
 <body>
-    {% for person in people %}
-        <p><b>ID: </b> {{ person.id }}</p>
-        <p><b>Имя: </b> {{ person.first_name }}</p>
-        <p><b>Фамилия: </b> {{ person.last_name }}</p>
-        <hr>
+<form method="get" action="/test">
+    <input type="text" name="q" value="{{ q }}">
+    <input type="submit" value="Поиск">
 
-    {% endfor %}
+</form>
+{% for person in people %}
+    <h3>{{ person.full_name }}</h3>
+    <p><b>ID: </b> {{ person.id }}</p>
+    <p><b>Имя: </b> {{ person.first_name }}</p>
+    <p><b>Фамилия: </b> {{ person.last_name }}</p>
+    <hr>
+{% endfor %}
+<h2>Добавить человека:</h2>
+<form method="post" action="/test/add">
+    <input type="text" name="first_name" placeholder="Имя"><br>
+    <input type="text" name="last_name" placeholder="Фамилия"><br>
+    <input type="submit" value="Добавить">
+</form>
+
 </body>
 </html>
