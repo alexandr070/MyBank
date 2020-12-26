@@ -1,5 +1,6 @@
 from flask import Flask, g, render_template, request, redirect, flash
 import sqlite3
+from country_list import countries_for_language
 
 app = Flask(__name__)
 app.secret_key = '2003'
@@ -11,7 +12,7 @@ cur.execute('''CREATE TABLE IF NOT EXISTS test (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 first_name TEXT,
 last_name TEXT,
-country TEXT DEFAULT 'Латвия'
+country TEXT
 );''')
 conn.close()
 
@@ -27,6 +28,11 @@ def get_db():
 def close_db(error):
     if hasattr(g, 'db'):
         g.db.close()
+
+
+def get_countries():
+    c = countries_for_language('ru')
+    return [country[1] for country in c]
 
 
 @app.route('/test')
@@ -47,13 +53,14 @@ def test():
             'full_name': row[3],
             'country': row[4]
         })
-    return render_template('test.html', people=people, q=q)
+    return render_template('test.html', people=people, q=q, countries=get_countries())
 
 
 @app.route('/test/add', methods=['POST'])
 def test_add():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
+    country = request.form['country']
     valid = True
     if len(first_name.strip()) == 0:
         flash('Имя не может быть пустым')
@@ -63,9 +70,13 @@ def test_add():
         flash('Фамилия не может быть пустой')
         valid = False
 
+    if country not in get_countries():
+        flash('Неверная страна')
+        valid = False
+
     if valid:
         c = get_db().cursor()
-        c.execute('INSERT INTO test (first_name, last_name) VALUES (?,?)', (first_name, last_name))
+        c.execute('INSERT INTO test (first_name, last_name,country) VALUES (?,?,?)', (first_name, last_name, country))
         get_db().commit()
     return redirect('/test')
 

@@ -1,1 +1,2 @@
 flask == 1.1.2
+country_list == 0.2.1

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>jmhgreddfsgijghn</title>
+    <title>Title</title>
 </head>
 <body>
 <form method="get" action="/test">
@@ -37,6 +37,11 @@
 <form method="post" action="/test/add">
     <input type="text" name="first_name" placeholder="Имя"><br>
     <input type="text" name="last_name" placeholder="Фамилия"><br>
+    <select name="country">
+        {% for country in countries -%}
+            <option value="{{ country }}" {% if country == 'Латвия' %}selected{% endif %}>{{ country }}</option>
+        {%- endfor %}
+    </select><br>
     <input type="submit" value="Добавить">
 </form>
 
