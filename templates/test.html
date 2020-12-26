@@ -15,9 +15,25 @@
     <p><b>ID: </b> {{ person.id }}</p>
     <p><b>Имя: </b> {{ person.first_name }}</p>
     <p><b>Фамилия: </b> {{ person.last_name }}</p>
+    <p><b>Страна: </b> {{ person.country }}</p>
+    <form method="post" action="/test/delete/{{ person.id }}">
+        <input type="submit" value="Уничтожить человека">
+    </form>
     <hr>
 {% endfor %}
+{% if people|length == 0 %}
+    <h3>Человеков не найдено</h3>
+{% endif %}
 <h2>Добавить человека:</h2>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <hr>
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        <hr>
+    {% endif %}
+{% endwith %}
 <form method="post" action="/test/add">
     <input type="text" name="first_name" placeholder="Имя"><br>
     <input type="text" name="last_name" placeholder="Фамилия"><br>

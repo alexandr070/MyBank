@@ -1,7 +1,8 @@
-from flask import Flask, g, render_template, request, redirect
+from flask import Flask, g, render_template, request, redirect, flash
 import sqlite3
 
 app = Flask(__name__)
+app.secret_key = '2003'
 
 conn = sqlite3.connect('bank.db')
 cur = conn.cursor()
@@ -9,7 +10,8 @@ cur = conn.cursor()
 cur.execute('''CREATE TABLE IF NOT EXISTS test (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 first_name TEXT,
-last_name TEXT
+last_name TEXT,
+country TEXT DEFAULT 'Латвия'
 );''')
 conn.close()
 
@@ -34,7 +36,7 @@ def test():
     c = get_db().cursor()
     qs = '{}%'.format(q)
     for row in c.execute(
-            '''SELECT *, first_name||' '||last_name AS full_name
+            '''SELECT id,first_name,last_name, first_name||' '||last_name AS full_name,country
             FROM test 
             WHERE (first_name LIKE ?) OR (last_name LIKE ?);''',
             (qs, qs)):
@@ -42,7 +44,8 @@ def test():
             'id': row[0],
             'first_name': row[1],
             'last_name': row[2],
-            'full_name': row[3]
+            'full_name': row[3],
+            'country': row[4]
         })
     return render_template('test.html', people=people, q=q)
 
@@ -51,7 +54,25 @@ def test():
 def test_add():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
+    valid = True
+    if len(first_name.strip()) == 0:
+        flash('Имя не может быть пустым')
+        valid = False
+
+    if len(last_name.strip()) == 0:
+        flash('Фамилия не может быть пустой')
+        valid = False
+
+    if valid:
+        c = get_db().cursor()
+        c.execute('INSERT INTO test (first_name, last_name) VALUES (?,?)', (first_name, last_name))
+        get_db().commit()
+    return redirect('/test')
+
+
+@app.route('/test/delete/<int:user_id>', methods=['POST'])
+def test_delete(user_id):
     c = get_db().cursor()
-    c.execute('INSERT INTO test (first_name, last_name) VALUES (?,?)', (first_name, last_name))
+    c.execute('DELETE FROM test WHERE id=?;', (user_id,))
     get_db().commit()
     return redirect('/test')

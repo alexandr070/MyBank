@@ -1342,7 +1342,12 @@
       <Position>3</Position>
       <DataType>TEXT|0s</DataType>
     </column>
-    <key id="492" parent="170">
+    <column id="492" parent="170" name="country">
+      <Position>4</Position>
+      <DataType>TEXT|0s</DataType>
+      <DefaultExpression>&apos;Латвия&apos;</DefaultExpression>
+    </column>
+    <key id="493" parent="170">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
